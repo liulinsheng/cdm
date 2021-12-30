@@ -1,176 +1,311 @@
-#include<stdio.h>
-#include<string.h>
-int changdu; 
-int c[100];
-//判断两个数是不是互素。 
-bool gcd(int p,int q){
-	int temp1,temp2;   //q=temp2*p+temp1 ;
-	if(q<p){
-		temp1=p;
-		p=q;
-		q=temp1;
-	}
-	temp1=q%p,temp2=q/p; 
-	while(temp1!=0){
-		
-	    q=p;p=temp1;
-		temp1=q%p;temp2=q/p;
-		}
-		if(temp1==0&&temp2==q){
-			printf("符合条件！\n");
-			return true;
-	    }
-	    else{
-	    	printf("不符合条件！请重新输入：\n");
-	    	return false;
-		}
-}
-
-//求e关于模(p-1)(q-1)的逆元d：即私钥 
-int extend(int e,int t){
-	int d;
-	for(d=0;d<t;d++){
-		if(e*d%t==1)
-	        return d;
-	}
-}
-
-//判断输入的p和q是不是素数 
-bool is_sushu(int s){
-	for(int i=2;i<s;i++){
-		if(s%i==0) return false;
-	}
-	return true;
-}
-//将明文转换成数字明文 
-//void convert(){
-//	char mingwen[100];    //符号明文 
-//	printf("请输入明文：\n");
-//	gets(mingwen);
-//	changdu=strlen();
-//	int ming[changdu];   //定义符号明文 
-//	for(int i=0;i<changdu;i++){
-//	ming[i]=mingwen[i];        //将字母转换成对应的ascii码。 
-//	printf("%d",mingwen[i]);
-//	} 
-//	 
-//	
-//}
-
-
-//加密函数 
-void encrypt(int e,int n){       //自己指定指数e 
-
-    //先将符号明文转换成字母所对应的ascii码。 
-	char mingwen[100];    //符号明文 
-	printf("请输入明文：\n");
-	scanf("%s",mingwen);
-	//gets(mingwen);
-	changdu=strlen(mingwen);
-	int ming[strlen(mingwen)];   //定义符号明文 
-	for(int i=0;i<strlen(mingwen);i++){
-	ming[i]=mingwen[i];        //将字母转换成对应的ascii码。 
-	printf("%d",mingwen[i]);  //将字母转换成对应的ascii码。可以不打印 
-	} 
-	printf("\n"); 
-	//开始加密 
-	printf("加密开始…………………………\n");
-	int zhuan=1;    //c为加密后的数字密文 
-	for(int i=0;i<strlen(mingwen);i++){
-	 
-	   for(int j=0;j<e;j++){
-		zhuan=zhuan*ming[i]%n;
-		//zhuan=zhuan%n; 
-	   }
-	   c[i]=zhuan;
-	   //printf("%d",mi[i]); 
-	   zhuan=1;
-	} 
-	printf("加密密文为：\n");
-	for(int i=0;i<strlen(mingwen);i++) 
-	printf("%d",c[i]); 
-	printf("\n加密结束…………………………\n");
-	//以下写法会导致溢出！
-//	{
-//		for(int i=0;i<strlen(mingwen);i++){
-//		zhuan=pow()
-//		mi[i]=int(pow(ming[i],e))%n;
-//		printf("密文为：%d",mi[0]);
-//	}
-//	} 
-	
-	
-//	printf("密文为：\n");
-//	for(int i=0;i<strlen(mingwen);i++){
-//		printf("%d",mi[i]);
-//	}
-	
-} 
-
-
-//解密函数 
-void decrypto(int d,int n){
-	int de_mingwen[changdu],zhuan1=1;
-	char de_ming[changdu];
-	for(int i=0;i<changdu;i++){
-	 
-	   for(int j=0;j<d;j++){
-		zhuan1=zhuan1*c[i]%n;
-		//zhuan=zhuan%n; 
-	   }
-	   de_mingwen[i]=zhuan1;
-	   //printf("%d",mi[i]); 
-	   zhuan1=1;
-	} 
-	printf("解密开始…………………………\n");
-	printf("解密后的数字明文为：\n");
-	for(int i=0;i<changdu;i++) 
-	printf("%d",de_mingwen[i]); 
-	printf("\n");
-	printf("解密后的符号明文为：\n");
-	for(int i=0;i<changdu;i++){
-		de_ming[i]=de_mingwen[i];
-		printf("%c",de_ming[i]);
-	}
-	printf("\n解密结束…………………………\n");
-}
-
-
-int main(){
-	int q,p,e,d,n,t,x,tep;
-	while(1){
-	printf("请输入p:",p);scanf("%d",&p);
-	tep=is_sushu(p);
-	if(tep==0){
-		printf("p不是素数，请重新输入p！\n");
-		continue;
-	}  
-	printf("请输入q:",q);scanf("%d",&q);
-	tep=is_sushu(q);
-	if(tep==0){
-		printf("q不是素数，请重新输入q！\n");
-		printf("请输入q:",q);scanf("%d",&q);
-	    tep=is_sushu(q);
-	}  
-	n=q*p;
-	t=(q-1)*(p-1); 
-	tep=gcd(p,q);
-	if(tep==0)  continue;
-    printf("t=(q-1)*(p-1)=%d\n",t);
-	printf("请输入一个指数e，使得（e,t）=1\n");scanf("%d",&e);
-	tep=gcd(e,t);
-	while(tep==0){
-	printf("请重新输入一个指数e，使得（e,t）=1：");scanf("%d",&e);
-	tep=gcd(e,t);	
-	}
-	d=extend(e,t); 
-	printf("密钥为：%d,一定保管好！",d);
-	printf("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-	encrypt(e,n);
-	printf("\n请输入正确的密钥，密钥正确将解密上面的密文:");scanf("%d",&d);
-	decrypto(d,n);
-	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-	}
-	
-	return 0;
-}
+#include <stdio.h>  
+#include <stdlib.h>  
+#include <string.h> 
+//歌曲信息包括：歌名、演唱者、作词、作曲、所属专辑、出版时间、出版公司  
+typedef struct music  
+{  
+    char name[20];    //歌名  
+    char singer[20];  //演唱者  
+    char authors[20]; //作词  
+    char compose[30]; //作曲  
+    char album[20];   //所属专辑  
+    char time[15];    //出版时间  
+    char company[30]; //出版公司  
+    struct music *next;  
+}music;  
+music *head=NULL;  
+int length;   //链表的长度  
+void create()  
+{  
+    music *p1,*p2;  
+    length=0;  
+    p1=(music *)malloc(sizeof(music));  
+    strcpy(p1->name,"-1");  
+    if(head==NULL)  
+        head=p1;  
+    printf("请输入音乐的歌名、演唱者、作词、作曲、所属专辑、出版时间、出版公司：/n");  
+    while(1)  //歌名为0的时候退出  
+    {  
+        p2=(music *)malloc(sizeof(music));  
+        //输入歌曲信息  
+        scanf("%s %s %s %s %s %s %s",p2->name,p2->singer,p2->authors,p2->compose,p2->album,p2->time,p2->company);  
+        if(strcmp(p2->name,"0")==0)  
+        {  
+            printf("链表创建完成！/n");  
+            break;  
+        }  
+        length++; //链表的长度  
+        p1->next=p2;  
+        p2->next=NULL;  
+        p1=p1->next;  
+    }  
+    return ;  
+}  
+void ModifymusicInfo()  
+{  
+    music *p=head->next;  
+    char name[20];  
+    printf("请输入要修改的歌曲的歌名：");  
+    getchar();  
+    scanf("%s",name);  
+    while(p!=NULL)  
+    {  
+        if(strcmp(p->name,name)==0)  
+        {  
+            printf("修改前，歌名为%s的歌曲的信息如下：/n",name);  
+            printf("音乐的歌名、演唱者、作词、作曲、所属专辑、出版时间、出版公司：/n");  
+            printf("%s %s %s %s %s %s %s/n",p->name,p->singer,p->authors,p->compose,p->album,p->time,p->company);  
+            printf("请输入歌曲的新的所属专辑：");  
+            getchar();  
+            scanf("%s",p->album);  
+            printf("请输入歌曲的新出版公司：");  
+            getchar();  
+            scanf("%s",p->company);  
+            printf("修改后，歌名为%s的歌曲的信息如下：/n",name);  
+            printf("音乐的歌名、演唱者、作词、作曲、所属专辑、出版时间、出版公司：/n");  
+            printf("%s %s %s %s %s %s %s/n",p->name,p->singer,p->authors,p->compose,p->album,p->time,p->company);  
+            return ;  
+        }  
+        p=p->next;  
+    }  
+    if(p==NULL)  
+    {  
+        printf("该歌曲不存在！/n");  
+        return ;  
+    }  
+}  
+  
+void display()  
+{  
+    music *p=head->next;  
+    printf("链表中所有的歌曲信息如下:/n");  
+    printf("音乐的歌名、演唱者、作词、作曲、所属专辑、出版时间、出版公司：/n");  
+    while(p!=NULL)  
+    {  
+        printf("%s %s %s %s %s %s %s/n",p->name,p->singer,p->authors,p->compose,p->album,p->time,p->company);  
+        p=p->next;  
+    }  
+    return ;  
+}  
+void search()  
+{  
+    int num,x,flag;  
+    char name[20];  
+    music *p=head->next;  
+    printf("请选择查询的方式：/n");  
+    printf("1、按歌名查询/t 2、按演唱者查询/n");  
+    scanf("%d",&x);  
+    if(x==1)  
+    {  
+        printf("需要查找的歌曲歌名为：");  
+        getchar();  
+        scanf("%s",name);  
+        while(p!=NULL)  
+        {  
+  
+            if(strcmp(p->name,name)==0)  
+            {  
+                printf("歌名为%s的歌曲的信息如下：/n",name);  
+                printf("音乐的歌名、演唱者、作词、作曲、所属专辑、出版时间、出版公司：/n");  
+                printf("%s %s %s %s %s %s %s/n",p->name,p->singer,p->authors,p->compose,p->album,p->time,p->company);  
+                return ;  
+            }     
+            p=p->next;  
+        }  
+        if(p==NULL)  
+            printf("没有这首歌曲的记录！/n");  
+    }  
+    else if(x==2)  
+    {  
+        flag=0;  
+        printf("需要查找的演唱者为：");  
+        getchar();  
+        scanf("%s",name);  
+        p=head->next;  
+        while(p!=NULL)  
+        {  
+            if(strcmp(p->singer,name)==0)  
+            {  
+                if(flag==0)  
+                {  
+                    printf("演唱者为%s的歌曲的信息如下：/n",name);  
+                    printf("音乐的歌名、演唱者、作词、作曲、所属专辑、出版时间、出版公司：/n");  
+                    flag=1;  
+                }  
+                printf("%s %s %s %s %s %s %s/n",p->name,p->singer,p->authors,p->compose,p->album,p->time,p->company);  
+            }     
+            p=p->next;  
+        }  
+        if(p==NULL && flag==0)  
+        {  
+            printf("没有该演唱者的歌曲记录！/n");  
+            return;  
+        }  
+    }  
+    return ;  
+}  
+  
+void insert()  
+{  
+    int num,i;  
+    music *p,*q;  
+    p=head;  
+  
+    printf("请输入你要插入位置: ");  
+    scanf("%d",&num);  
+    if(num>length)  
+    {  
+        printf("找不到要插入的位置/n");  
+        return ;  
+    }  
+    else  
+    {  
+        printf("请输入你要插入的音乐的歌名、演唱者、作词、作曲、所属专辑、出版时间、出版公司：/n");  
+        q=(music *)malloc(sizeof(music));  
+        //输入歌曲信息  
+        scanf("%s %s %s %s %s %s %s",q->name,q->singer,q->authors,q->compose,q->album,q->time,q->company);  
+        while(p!=NULL)  
+        {  
+            if(strcmp(p->name,q->name)==0)  
+            {  
+                printf("该歌曲已经存在，无法插入！/n");  
+                return ;  
+            }  
+            p=p->next;  
+        }  
+        p=head;  
+        for(i=0;i<num;i++)  
+            p=p->next;  
+        q->next=p->next;  
+        p->next=q;  
+        length++;  
+        printf("插入成功！/n");  
+        return ;  
+    }  
+}    
+  
+void Delete()  
+{  
+    char name[20];  
+    music *p,*q;  
+    q=head,p=head->next;  
+    printf("请输入要删除的歌曲的歌名:/n");  
+    getchar();  
+    scanf("%s",name);  
+  
+    while(p!=NULL)  
+    {  
+        if(strcmp(p->name,name)==0)  
+        {  
+            q->next=p->next;  
+            free(p);  
+            length--;  
+            printf("删除成功！/n");  
+            return ;  
+        }  
+        p=p->next;  
+        q=q->next;  
+    }  
+    if(p==NULL)  
+    {  
+        printf("找不到要删除的歌曲！/n");  
+        return ;  
+    }  
+}  
+void menu()  
+{  
+    printf("________________________________________________________________/n");  
+    printf("|              歌厅歌曲管理系统                                |/n");  
+    printf("|               0、 退出系统                                   |/n");  
+    printf("|               1、 录入歌曲信息                               |/n");  
+    printf("|               2、 显示歌曲信息                               |/n");  
+    printf("|               3、 查找链表中的某一首歌曲                     |/n");  
+    printf("|               4、 删除链表中指定歌曲                         |/n");  
+    printf("|               5、 指定的位置上插入一个新结点                 |/n");  
+    printf("|               6、 修改歌曲信息                               |/n");  
+    printf("________________________________________________________________/n");  
+    return ;  
+}  
+int main(void)  
+{  
+    int a;  
+    menu();  
+    while(1)  
+    {  
+        printf("请选择相应的功能：");  
+        scanf("%d",&a);  
+        switch(a)  
+        {  
+        case 0:  
+            return 0;  
+        case 1:  
+            create();  
+            menu();  
+            break;  
+        case 2:  
+            if(head)  
+            {  
+                display();  
+                menu();  
+            }  
+            else  
+            {  
+                printf("链表为空，请先建立链表！/n");  
+                menu();  
+            }  
+            break;  
+        case 3:  
+            if(head)  
+            {  
+                search();  
+                menu();  
+            }  
+            else  
+            {  
+                printf("链表为空，请先建立链表！/n");  
+                menu();  
+            }  
+            break;  
+        case 4:  
+            if(head)  
+            {  
+                Delete();  
+                menu();  
+            }  
+            else  
+            {  
+                printf("链表为空，请先建立链表！/n");  
+                menu();  
+            }  
+            break;  
+        case 5:  
+            if(head)  
+            {  
+                insert();  
+                menu();  
+            }  
+            else  
+            {  
+                printf("链表为空，请先建立链表！/n");  
+                menu();  
+            }  
+            break;  
+        case 6:  
+            if(head)  
+            {  
+                ModifymusicInfo();  
+                menu();  
+            }  
+            else  
+            {  
+                printf("链表为空，请先建立链表！/n");  
+                menu();  
+            }  
+            break;  
+        default:  
+            break;  
+        }  
+    }  
+    system("pause");  
+    return 0;  
+}  
